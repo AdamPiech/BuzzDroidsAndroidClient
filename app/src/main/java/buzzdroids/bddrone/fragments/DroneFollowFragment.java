@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -33,6 +34,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import static buzzdroids.bddrone.utils.Util.*;
 import static buzzdroids.bddrone.utils.Util.TAG;
 import static buzzdroids.bddrone.utils.beacon.BeaconColorToMarkerColorService.getMarkerColor;
+import static com.google.android.gms.maps.GoogleMap.*;
 
 /**
  * Created by Adam Piech on 2016-12-07.
@@ -48,9 +50,11 @@ public class DroneFollowFragment extends Fragment implements OnMapReadyCallback 
     private Runnable runnable = new Runnable() {
         public void run() {
             downloadAllData();
-            handler.postDelayed(runnable, 2000);
+            handler.postDelayed(runnable, 3500);
         }
     };
+
+    private Coordinates droneCoordinates = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -63,9 +67,9 @@ public class DroneFollowFragment extends Fragment implements OnMapReadyCallback 
 
     private void downloadAllData() {
         if (googleMap != null) {
-//            googleMap.clear();
-            downloadBeaconList();
+            googleMap.clear();
             downloadDronePosition();
+            downloadBeaconList();
         }
     }
 
@@ -78,7 +82,7 @@ public class DroneFollowFragment extends Fragment implements OnMapReadyCallback 
                         if (response.isSuccessful()) {
                             for (DroneLocation drone : response.body()) {
                                 googleMap.addMarker(createDroneMarker(drone));
-                                moveMapToLocation(drone.getCoordinates());
+                                droneCoordinates = drone.getCoordinates();
                             }
                         }
                     }
@@ -144,8 +148,16 @@ public class DroneFollowFragment extends Fragment implements OnMapReadyCallback 
         } catch (SecurityException ex) {
             Log.e(TAG, ex.getMessage());
         }
-        googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-        googleMap.animateCamera(CameraUpdateFactory.zoomTo(15.5f));
+        googleMap.setMapType(MAP_TYPE_HYBRID);
+        googleMap.setOnMyLocationButtonClickListener(new OnMyLocationButtonClickListener() {
+            @Override
+            public boolean onMyLocationButtonClick() {
+                if (droneCoordinates != null) {
+                    moveMapToLocation(droneCoordinates);
+                }
+                return true;
+            }
+        });
     }
 
     public void moveMapToLocation(Coordinates coordinates) {

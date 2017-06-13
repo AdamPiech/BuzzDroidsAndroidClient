@@ -14,7 +14,9 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import buzzdroids.bddrone.R;
 import buzzdroids.bddrone.dataModel.Beacon;
@@ -41,8 +43,9 @@ public class BeaconListFragment extends Fragment {
     private Handler handler = new Handler();
     private Runnable runnable = new Runnable() {
         public void run() {
+//            ((LinearLayout) getActivity().findViewById(R.id.container)).removeAllViews();
             downloadAllData();
-            handler.postDelayed(runnable, 2000);
+            handler.postDelayed(runnable, 5000);
         }
     };
 
@@ -56,8 +59,8 @@ public class BeaconListFragment extends Fragment {
     }
 
     private void downloadAllData() {
+//        downloadDronePosition();
         downloadBeaconList();
-        downloadDronePosition();
     }
 
     private void downloadDronePosition() {
@@ -85,6 +88,7 @@ public class BeaconListFragment extends Fragment {
                     @Override
                     public void onResponse(Call<List<Beacon>> call, Response<List<Beacon>> response) {
                         if (response.isSuccessful()) {
+                            ((LinearLayout) getActivity().findViewById(R.id.container)).removeAllViews();
                             for (Beacon beacon : response.body()) {
                                 createBeaconListElement(beacon);
                             }

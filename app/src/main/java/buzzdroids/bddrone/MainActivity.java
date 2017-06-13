@@ -44,6 +44,13 @@ public class MainActivity extends AppCompatActivity {
         checkInternetConnection();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
     public void resetDronePosition(View view) {
         Call<List<DroneLocation>> beacons = buzzdroidsClient.getResetDroneLocation();
         beacons.enqueue(
