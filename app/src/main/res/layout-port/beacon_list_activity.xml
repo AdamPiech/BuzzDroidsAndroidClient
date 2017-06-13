@@ -12,7 +12,10 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
 
         <LinearLayout
             android:orientation="vertical"
@@ -43,7 +46,8 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/button5"
                     android:layout_weight="1"
-                    android:width="1dp" />
+                    android:width="1dp"
+                    android:onClick="resetBeaconList"/>
 
                 <Button
                     android:text="Reset drone position"
@@ -51,21 +55,24 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/button4"
                     android:layout_weight="1"
-                    android:width="1dp" />
+                    android:width="1dp"
+                    android:onClick="resetDronePosition"/>
             </LinearLayout>
 
             <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical" />
+                    android:orientation="vertical"
+                    android:id="@+id/container" />
             </ScrollView>
 
         </LinearLayout>
     </FrameLayout>
-
 </RelativeLayout>

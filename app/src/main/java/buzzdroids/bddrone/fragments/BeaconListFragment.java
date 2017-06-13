@@ -1,5 +1,7 @@
 package buzzdroids.bddrone.fragments;
 
+import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -7,6 +9,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 
@@ -24,6 +28,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import static buzzdroids.bddrone.utils.Util.SERVER_URL;
 import static buzzdroids.bddrone.utils.Util.TAG;
+import static buzzdroids.bddrone.utils.beacon.BeaconColorToMarkerColorService.*;
 
 /**
  * Created by Adam Piech on 2017-06-02.
@@ -56,23 +61,19 @@ public class BeaconListFragment extends Fragment {
     }
 
     private void downloadDronePosition() {
-        Call<List<DroneLocation>> beacons = buzzdroidsClient.getDronesLocations();
-        beacons.enqueue(
+        Call<List<DroneLocation>> drones = buzzdroidsClient.getDroneLocation();
+        drones.enqueue(
                 new Callback<List<DroneLocation>>() {
                     @Override
                     public void onResponse(Call<List<DroneLocation>> call, Response<List<DroneLocation>> response) {
-                        Log.i(TAG, "onResponse: " + response.isSuccessful() + " " + response.body());
                         if (response.isSuccessful()) {
                             for (DroneLocation drone : response.body()) {
-
+                                createDroneListElement(drone);
                             }
                         }
                     }
-
                     @Override
-                    public void onFailure(Call<List<DroneLocation>> call, Throwable throwable) {
-                        Log.e(TAG, "getDronePosition: ", throwable);
-                    }
+                    public void onFailure(Call<List<DroneLocation>> call, Throwable throwable) {}
                 }
         );
     }
@@ -83,20 +84,38 @@ public class BeaconListFragment extends Fragment {
                 new Callback<List<Beacon>>() {
                     @Override
                     public void onResponse(Call<List<Beacon>> call, Response<List<Beacon>> response) {
-                        Log.i(TAG, "onResponse: " + response.isSuccessful() + " " + response.body());
                         if (response.isSuccessful()) {
                             for (Beacon beacon : response.body()) {
-
+                                createBeaconListElement(beacon);
                             }
                         }
                     }
-
                     @Override
-                    public void onFailure(Call<List<Beacon>> call, Throwable throwable) {
-                        Log.e(TAG, "getBeacons: ", throwable);
-                    }
+                    public void onFailure(Call<List<Beacon>> call, Throwable throwable) {}
                 }
         );
+    }
+
+    private void createDroneListElement(DroneLocation drone) {
+        LinearLayout container = (LinearLayout) getActivity().findViewById(R.id.container);
+        LayoutInflater inflater = (LayoutInflater) getActivity().getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View element = inflater.inflate(R.layout.beacon_list_element, null);
+        ((TextView) element.findViewById(R.id.name)).setText(drone.getDroneName());
+        ((TextView) element.findViewById(R.id.latitude)).setText(drone.getCoordinates().getLatitude() + "");
+        ((TextView) element.findViewById(R.id.longitude)).setText(drone.getCoordinates().getLongitude() + "");
+        element.setBackgroundColor(Color.WHITE);
+        container.addView(element);
+    }
+
+    private void createBeaconListElement(Beacon beacon) {
+        LinearLayout container = (LinearLayout) getActivity().findViewById(R.id.container);
+        LayoutInflater inflater = (LayoutInflater) getActivity().getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View element = inflater.inflate(R.layout.beacon_list_element, null);
+        ((TextView) element.findViewById(R.id.name)).setText(beacon.getName());
+        ((TextView) element.findViewById(R.id.latitude)).setText(beacon.getCoordinates().getLatitude() + "");
+        ((TextView) element.findViewById(R.id.longitude)).setText(beacon.getCoordinates().getLongitude() + "");
+        element.setBackgroundColor(getListElementColor(beacon.getColor()));
+        container.addView(element);
     }
 
     private void initBuzzdroidsClient() {

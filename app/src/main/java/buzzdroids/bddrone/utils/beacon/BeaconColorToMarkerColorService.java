@@ -1,5 +1,7 @@
 package buzzdroids.bddrone.utils.beacon;
 
+import android.graphics.Color;
+
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
@@ -31,6 +33,15 @@ public class BeaconColorToMarkerColorService {
         colors.put("yellow", fromResource(R.mipmap.yellow_beacon));
         colors.put("red", fromResource(R.mipmap.red_beacon));
         colors.put("black", fromResource(R.mipmap.black_beacon));
+        return colors.get(beaconColor);
+    }
+
+    public static int getListElementColor(String beaconColor) {
+        Map<String, Integer> colors = new HashMap<>();
+        colors.put("green", Color.GREEN);
+        colors.put("yellow", Color.YELLOW);
+        colors.put("red", Color.RED);
+        colors.put("black", Color.GRAY);
         return colors.get(beaconColor);
     }
 }

@@ -14,7 +14,6 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 
@@ -71,12 +70,11 @@ public class DroneFollowFragment extends Fragment implements OnMapReadyCallback 
     }
 
     private void downloadDronePosition() {
-        Call<List<DroneLocation>> beacons = buzzdroidsClient.getDronesLocations();
-        beacons.enqueue(
+        Call<List<DroneLocation>> drones = buzzdroidsClient.getDroneLocation();
+        drones.enqueue(
                 new Callback<List<DroneLocation>>() {
                     @Override
                     public void onResponse(Call<List<DroneLocation>> call, Response<List<DroneLocation>> response) {
-                        Log.i(TAG, "onResponse: " + response.isSuccessful() + " " + response.body());
                         if (response.isSuccessful()) {
                             for (DroneLocation drone : response.body()) {
                                 googleMap.addMarker(createDroneMarker(drone));
@@ -85,9 +83,7 @@ public class DroneFollowFragment extends Fragment implements OnMapReadyCallback 
                         }
                     }
                     @Override
-                    public void onFailure(Call<List<DroneLocation>> call, Throwable throwable) {
-                        Log.e(TAG, "getDronePosition: ", throwable);
-                    }
+                    public void onFailure(Call<List<DroneLocation>> call, Throwable throwable) {}
                 }
         );
     }
@@ -98,7 +94,6 @@ public class DroneFollowFragment extends Fragment implements OnMapReadyCallback 
                 new Callback<List<Beacon>>() {
                     @Override
                     public void onResponse(Call<List<Beacon>> call, Response<List<Beacon>> response) {
-                        Log.i(TAG, "onResponse: " + response.isSuccessful() + " " + response.body());
                         if (response.isSuccessful()) {
                             for (Beacon beacon : response.body()) {
                                 googleMap.addMarker(createBeaconMarker(beacon));
@@ -106,9 +101,7 @@ public class DroneFollowFragment extends Fragment implements OnMapReadyCallback 
                         }
                     }
                     @Override
-                    public void onFailure(Call<List<Beacon>> call, Throwable throwable) {
-                        Log.e(TAG, "getBeacons: ", throwable);
-                    }
+                    public void onFailure(Call<List<Beacon>> call, Throwable throwable) {}
                 }
         );
     }

@@ -5,6 +5,7 @@ import java.util.List;
 import buzzdroids.bddrone.dataModel.Beacon;
 import buzzdroids.bddrone.dataModel.DroneLocation;
 import retrofit2.Call;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 
 /**
@@ -17,9 +18,12 @@ public interface BuzzdroidsClient {
     Call<List<Beacon>> getBeaconList();
 
     @GET("/drone/location")
-    Call<List<DroneLocation>> getDronesLocations();
+    Call<List<DroneLocation>> getDroneLocation();
 
-//    @POST("/help/area")
-//    Call<HelpPlan> getHelpPlan();
+    @DELETE("/beacon/reset")
+    Call<List<Beacon>> getResetBeaconList();
+
+    @DELETE("/drone/location/reset")
+    Call<List<DroneLocation>> getResetDroneLocation();
 
 }

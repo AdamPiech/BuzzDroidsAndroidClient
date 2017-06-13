@@ -8,17 +8,34 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.View;
 
+import com.google.gson.Gson;
+
+import java.util.List;
+
+import buzzdroids.bddrone.dataModel.Beacon;
+import buzzdroids.bddrone.dataModel.DroneLocation;
+import buzzdroids.bddrone.utils.api.BuzzdroidsClient;
 import buzzdroids.bddrone.utils.network.NetworkChangeReceiver;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+import static buzzdroids.bddrone.utils.Util.SERVER_URL;
 
 public class MainActivity extends AppCompatActivity {
 
     private ViewPager pager;
+    private BuzzdroidsClient buzzdroidsClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        initBuzzdroidsClient();
 
         pager = (ViewPager) findViewById(R.id.pager);
         PagerAdapter pagerAdapter = new FragmentActivity(getSupportFragmentManager(), getResources().getConfiguration());
@@ -27,21 +44,36 @@ public class MainActivity extends AppCompatActivity {
         checkInternetConnection();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu, menu);
-        return true;
+    public void resetDronePosition(View view) {
+        Call<List<DroneLocation>> beacons = buzzdroidsClient.getResetDroneLocation();
+        beacons.enqueue(
+                new Callback<List<DroneLocation>>() {
+                    @Override
+                    public void onResponse(Call<List<DroneLocation>> call, Response<List<DroneLocation>> response) {}
+                    @Override
+                    public void onFailure(Call<List<DroneLocation>> call, Throwable throwable) {}
+                }
+        );
     }
 
-    @Override
-    protected void onRestart() {
-        super.onRestart();
+    public void resetBeaconList(View view) {
+        Call<List<Beacon>> beacons = buzzdroidsClient.getResetBeaconList();
+        beacons.enqueue(
+                new Callback<List<Beacon>>() {
+                    @Override
+                    public void onResponse(Call<List<Beacon>> call, Response<List<Beacon>> response) {}
+                    @Override
+                    public void onFailure(Call<List<Beacon>> call, Throwable throwable) {}
+                }
+        );
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
+    private void initBuzzdroidsClient() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(SERVER_URL)
+                .addConverterFactory(GsonConverterFactory.create(new Gson()))
+                .build();
+        buzzdroidsClient = retrofit.create(BuzzdroidsClient.class);
     }
 
     private void checkInternetConnection() {
@@ -66,4 +98,15 @@ public class MainActivity extends AppCompatActivity {
         });
         builder.show();
     }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
 }
